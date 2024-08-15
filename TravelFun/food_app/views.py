@@ -4,4 +4,4 @@ from django.shortcuts import render
 
 
 def food_mainPage(request):
-    return render(request, 'food_app/food.html')
+    return render(request, 'food_app/food_mainPage.html')
