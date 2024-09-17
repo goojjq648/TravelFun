@@ -39,7 +39,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 # Application definition
 
 INSTALLED_APPS = [
@@ -51,8 +52,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main_app',
     'food_app',
+    'accounts',
+    'crispy_forms',
+    'crispy_bootstrap5',
+    'widget_tweaks'
 ]
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+AUTH_USER_MODEL = 'accounts.Member'
 
+LOGIN_REDIRECT_URL = '/member_list'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -64,11 +73,17 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'TravelFun.urls'
+LOGIN_URL = '/accounts/login/'  
+LOGIN_REDIRECT_URL = '/'  
+LOGIN_REDIRECT_URL = '/accounts/members/'
+AUTH_USER_MODEL = 'accounts.Member'  # 確保這裡設定為你的自定義用戶模型
 
+LOGIN_REDIRECT_URL = '/members/'  # 登入成功後的重定向 URL
+LOGOUT_REDIRECT_URL = '/login/'  # 登出後的重定向 URL
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -83,7 +98,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'TravelFun.wsgi.application'
 
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+]
 
+
+
+AUTH_USER_MODEL = 'accounts.Member'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -99,7 +121,7 @@ DATABASES = {
     }
 }
 
-
+AUTH_USER_MODEL = 'accounts.Member'
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -135,6 +157,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

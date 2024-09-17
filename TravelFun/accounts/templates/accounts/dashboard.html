@@ -1,0 +1,42 @@
+{% extends 'main_app/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>用戶列表</h2>
+    {% if user.is_authenticated and user.is_admin %}
+    <div class="mb-3">
+        <form method="get" action="{% url 'dashboard' %}">
+            <input type="text" name="q" placeholder="搜尋用戶" class="form-control mb-3" value="{{ request.GET.q }}">
+            <button type="submit" class="btn btn-primary">搜尋</button>
+        </form>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>姓名</th>
+                <th>帳號</th>
+                <th>電子郵件</th>
+                <th>權限等級</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in members %}
+            <tr>
+                <td>{{ member.full_name }}</td>
+                <td>{{ member.username }}</td>
+                <td>{{ member.email }}</td>
+                <td>{{ member.get_level_display }}</td>
+                <td>
+                    <a href="{% url 'edit_member' member.id %}" class="btn btn-warning btn-sm">編輯</a>
+                    <a href="{% url 'delete_member' member.id %}" class="btn btn-danger btn-sm">刪除</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>您沒有權限查看此頁面。</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends 'main_app/base.html' %}
+
+{% block content %}
+<div class="alert alert-danger" role="alert">
+    您沒有權限查看這些內容。
+</div>
+<a href="{% url 'home' %}" class="btn btn-primary">返回首頁</a>
+{% endblock %}

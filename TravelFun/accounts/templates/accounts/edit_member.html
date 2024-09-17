@@ -1,0 +1,11 @@
+<!-- templates/accounts/edit_member.html -->
+{% extends 'main_app/base_admin.html' %}
+
+{% block content %}
+<h2>編輯會員</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">保存</button>
+</form>
+{% endblock %}

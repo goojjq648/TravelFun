@@ -1,0 +1,14 @@
+{% extends 'main_app/base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">刪除會員</h2>
+    <p class="text-center">你確定要刪除會員<strong>{{ member.username }}</strong> 嗎？</p>
+    <form method="post" action="{% url 'delete_member' member.id %}">
+        {% csrf_token %}
+        <div class="d-grid mt-3">
+            <button type="submit" class="btn btn-danger">刪除</button>
+            <a href="{% url 'member_list' %}" class="btn btn-secondary">取消</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

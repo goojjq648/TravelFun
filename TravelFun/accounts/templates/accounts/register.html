@@ -1,0 +1,36 @@
+{% extends 'main_app/base.html' %}
+
+{% block content %}
+<h2>註冊</h2>
+<form method="POST" action="{% url 'register' %}">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="full_name" class="form-label">姓名</label>
+        <input type="text" class="form-control" id="full_name" name="full_name" required>
+    </div>
+    <div class="mb-3">
+        <label for="username" class="form-label">帳號</label>
+        <input type="text" class="form-control" id="username" name="username" required>
+    </div>
+    <div class="mb-3">
+        <label for="email" class="form-label">電子郵件</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">密碼</label>
+        <input type="password" class="form-control" id="password" name="password" required>
+    </div>
+    <div class="mb-3">
+        <label for="confirm_password" class="form-label">確認密碼</label>
+        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+    </div>
+    <button type="submit" class="btn btn-primary">註冊</button>
+    {% if messages %}
+    <div class="alert alert-warning mt-3">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+</form>
+{% endblock %}

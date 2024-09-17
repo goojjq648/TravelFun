@@ -1,0 +1,22 @@
+<!-- main_app/templates/main_app/logout.html -->
+{% extends 'main_app/base.html' %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <h1>已登出</h1>
+    <p>您已經成功登出。<span id="countdown" class="countdown">5</span> 秒後將返回登入頁面。</p>
+    <script>
+        var countdownElement = document.getElementById('countdown');
+        var countdown = 5;
+
+        var interval = setInterval(function() {
+            countdown--;
+            countdownElement.textContent = countdown;
+
+            if (countdown <= 0) {
+                clearInterval(interval);
+                window.location.href = "{% url 'login' %}";
+            }
+        }, 1000);
+    </script>
+{% endblock %}

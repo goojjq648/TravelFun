@@ -1,0 +1,48 @@
+{% extends 'main_app/base.html' %}
+
+{% block content %}
+<h2>會員列表</h2>
+
+{% if request.session.member_level == 'admin' %}
+    <a href="{% url 'add_member' %}" class="btn btn-primary">新增會員</a>
+    <form method="GET" action="{% url 'search_members' %}">
+        <input type="text" name="search" placeholder="搜尋會員" class="form-control mb-2">
+        <button type="submit" class="btn btn-secondary">搜尋</button>
+    </form>
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th>姓名</th>
+                <th>帳號</th>
+                <th>電子郵件</th>
+                <th>權限等級</th>
+                <th>註冊時間</th>
+                <th>最後更新時間</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in members %}
+                <tr>
+                    <td>{{ member.full_name }}</td>
+                    <td>{{ member.username }}</td>
+                    <td>{{ member.email }}</td>
+                    <td>{{ member.get_level_display }}</td>
+                    <td>{{ member.date_joined }}</td>
+                    <td>{{ member.last_updated }}</td>
+                    <td>
+                        <a href="{% url 'edit_member' member.id %}" class="btn btn-warning">編輯</a>
+                        <a href="{% url 'delete_member' member.id %}" class="btn btn-danger">刪除</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">登出</button>
+    </form>
+{% else %}
+    <p>您沒有權限查看這些內容。</p>
+{% endif %}
+{% endblock %}
