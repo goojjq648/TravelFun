@@ -1,0 +1,117 @@
+
+{% block styles %}
+<style>
+
+</style>
+{% endblock %}
+{% block content %}
+<div style=" margin-bottom:10px">
+    <h3>景點搜尋(選擇地址或直接搜尋名稱)</h3>
+    <select id="selectRegion">
+        <option value="0">請選擇</option>
+    </select>
+    <select id="selectTown"></select>
+    <form  method="POST" enctype="multipart/form-data">  
+        {% csrf_token %}
+        <div class="mb-3">
+         <label for="InputName" class="form-label">景點名稱</label>
+         <input type="text" class="form-control" id="InputName" name="name">
+         <button type="submit" class="btn btn-primary" id="buttonSubmit">搜尋ˋ</button>
+</div>
+<a style="margin-right:200 PX ;" href="{% url 'travel:register' %}" class="btn btn-danger" >新增</a>
+
+<a href="/travel/" class="btn btn-danger" >回首頁</a>
+
+<div style="margin-top:10px">
+    <table  class="table table-bordered">
+        <thead>
+            <tr>
+                <th>景點</th>
+                <th>類別</th>
+                <th>電話</th>
+                <th>縣市</th>
+                <th>鄉鎮市(區)</th>
+                <th>編輯</th>
+            </tr>
+        </thead>
+            
+        <tbody id="table">
+            {% for item in travel %}
+            <tr>
+                <td>{{ item.travel_name }}</td>
+                <td>{{ item.class1_id }}</td>
+                <td>{{ item.tel }}</td>
+                <td>{{ item.region}}</td>
+                <td>{{ item.town}}</td>
+                <td>
+                    <a href="/travel/preview/{{item.travel_id}}" class="btn btn-danger" >預覽</a>
+                    <a href="/travel/edit/{{item.travel_id}}" class="btn btn-danger" >修改</a>
+                    <a href="/travel/delete/{{item.travel_id}}" class="btn btn-danger" >刪除</a>     
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <div id="div1"></div>
+        
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+ const selRegion = document.querySelector('#selectRegion');
+ const selTown = document.querySelector('#selectTown');
+ const divInfo = document.querySelector('#div1')
+ const eleTable = document.querySelector('#table');
+ (async ()=>{
+    //call api 取得 JSON 資料
+   const response = await fetch('/travel/region/')
+   const regions = await response.json()
+   const optsArray = regions.map((region,index) => `<option value="${region}">${index}-${region}</option>`)  
+    //將資料顯示在網頁上
+    selRegion.innerHTML = optsArray.join("")
+
+    loadTown()
+ })();
+
+//根據城市名稱讀取鄉鎮區的資料
+ const loadTown = async ()=>{
+    const response = await fetch(`/travel/town/${selRegion.value}`)
+    const towns = await response.json()
+
+    const optsArray = towns.map((item)=>`<option value="${item}">${item}</option>`)
+
+   selTown.innerHTML = optsArray.join("")
+
+ }
+ 
+ selRegion.addEventListener('change',()=>{
+    loadTown()
+
+ })
+
+ selTown.addEventListener('change',async()=>{
+    eleTable.innerHTML=""
+    const response = await fetch(`/travel/show/${selTown.value}`)
+    const towns = await response.json()
+    console.log(towns)
+    towns.forEach(item =>{
+        if(item){
+            let trip = `<tr>
+                <td>${item.travel_name}</td>
+                <td>${item.class1_id}</td>
+                <td>${item.tel}</td>
+                <td>${item.region}</td>
+                <td>${item.town}</td>
+                <td>
+                    <a href="/travel/preview/${item.travel_id}" class="btn btn-danger" >預覽</a>
+                    <a href="/travel/edit/${item.travel_id}" class="btn btn-danger" >修改</a>
+                    <a href="/travel/delete/${item.travel_id}" class="btn btn-danger" >刪除</a>     
+                </td>
+                </tr>`;
+                eleTable.innerHTML = eleTable.innerHTML+trip;
+            }
+    })  
+})
+
+</script>
+{% endblock %}
