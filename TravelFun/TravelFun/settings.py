@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main_app',
     'food_app',
+    'funstyle_app',
 ]
 
 MIDDLEWARE = [
