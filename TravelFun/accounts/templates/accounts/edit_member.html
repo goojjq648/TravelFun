@@ -1,5 +1,5 @@
 <!-- templates/accounts/edit_member.html -->
-{% extends 'main_app/base_admin.html' %}
+{% extends 'main_app/base.html' %}
 
 {% block content %}
 <h2>編輯會員</h2>
@@ -7,5 +7,6 @@
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" class="btn btn-primary">保存</button>
+    <a href="{% url 'member_list' %}" class="btn btn-secondary">返回會員列表</a>
 </form>
 {% endblock %}

@@ -13,29 +13,36 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav me-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'food' %}">餐廳系統</a>
                 </li>
-                {% if member_id %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'member_list' %}">會員列表</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'register' %}">註冊</a>
-                </li>
-                <li class="nav-item">
-                    <form method="POST" action="{% url 'logout' %}">
-                        {% csrf_token %}
-                        <button type="submit" class="nav-link btn btn-link">登出</button>
-                    </form>
-                </li>
+                {% if request.session.member_id %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'member_list' %}">會員列表</a>
+                    </li>
+                    <li class="nav-item">
+                        <form method="POST" action="{% url 'logout' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link btn btn-link">登出</button>
+                        </form>
+                    </li>
                 {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">登入</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">註冊</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">登入</a>
+                    </li>
                 {% endif %}
             </ul>
+            <div class="ms-auto d-flex align-items-center">
+                {% if request.session.member_id %}
+                    <span class="navbar-text me-3">
+                        {{ request.session.full_name }} ({{ request.session.member_level }})
+                    </span>
+                {% endif %}
+            </div>
         </div>
     </nav>
     <div class="container mt-4">

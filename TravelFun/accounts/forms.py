@@ -3,6 +3,10 @@ from .models import Member
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
 
+
+from django import forms
+from .models import Member
+
 class MemberRegistrationForm(forms.ModelForm):
     password1 = forms.CharField(widget=forms.PasswordInput(), label='密碼')
     password2 = forms.CharField(widget=forms.PasswordInput(), label='確認密碼')
@@ -25,11 +29,6 @@ class MemberRegistrationForm(forms.ModelForm):
             user.save()
         return user
 
-from django import forms
-
-
-
-
 class MemberEditForm(forms.ModelForm):
     class Meta:
         model = Member
@@ -43,20 +42,9 @@ class MemberEditForm(forms.ModelForm):
             'is_staff': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
-class RegistrationForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput)
-
-    class Meta:
-        model = Member
-        fields = ['username', 'full_name', 'email', 'password']
-
-    def clean_password(self):
-        return self.cleaned_data['password']
-
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=150)
     password = forms.CharField(widget=forms.PasswordInput)
-
 
 class MemberForm(forms.ModelForm):
     class Meta:
