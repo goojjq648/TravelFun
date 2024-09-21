@@ -4,28 +4,26 @@
 <h2>註冊</h2>
 <form method="POST" action="{% url 'register' %}">
     {% csrf_token %}
-    <div class="mb-3">
-        <label for="full_name" class="form-label">姓名</label>
-        <input type="text" class="form-control" id="full_name" name="full_name" required>
-    </div>
-    <div class="mb-3">
-        <label for="username" class="form-label">帳號</label>
-        <input type="text" class="form-control" id="username" name="username" required>
-    </div>
-    <div class="mb-3">
-        <label for="email" class="form-label">電子郵件</label>
-        <input type="email" class="form-control" id="email" name="email" required>
-    </div>
-    <div class="mb-3">
-        <label for="password" class="form-label">密碼</label>
-        <input type="password" class="form-control" id="password" name="password" required>
-    </div>
-    <div class="mb-3">
-        <label for="confirm_password" class="form-label">確認密碼</label>
-        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-    </div>
+    {{ form.as_p }} <!-- 使用 Django 內置方法渲染表單字段 -->
+
     <button type="submit" class="btn btn-primary">註冊</button>
-    {% if messages %}
+    
+    {% if form.errors %} <!-- 檢查是否有表單錯誤 -->
+    <div class="alert alert-danger mt-3">
+        <ul>
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li>{{ field.label }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    {% if messages %} <!-- 顯示成功信息 -->
     <div class="alert alert-warning mt-3">
         {% for message in messages %}
             {{ message }}

@@ -5,8 +5,6 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .forms import MemberEditForm, MemberRegistrationForm, LoginForm, MemberForm
-from .forms import MemberRegistrationForm
-
 from .auth import authenticate_member  # 自定義的身份驗證函式
 from .forms import MemberRegistrationForm
 # 確保用戶是管理員才能查看會員列表
@@ -31,12 +29,18 @@ def member_list(request):
         return redirect('login')  # 未登入，重定向到登入頁面
 
     member = Member.objects.get(id=member_id)
-    if member.level != 'admin':  # 確認會員等級是否為管理員
-        return redirect('no_permission')  # 如果不是管理員，重定向到無權限頁面
+    if member.level not in ['admin', 'editor']:  # 如果不是 admin 或 editor
+        return redirect('no_permission')  # 重定向到無權限頁面
 
     members = Member.objects.all()
-    return render(request, 'accounts/member_list.html', {'members': members})
 
+    # 傳遞一個變數來判斷是否顯示操作按鈕
+    can_edit = member.level == 'admin'
+
+    return render(request, 'accounts/member_list.html', {
+        'members': members,
+        'can_edit': can_edit
+    })
 # 新增用戶
 def add_member(request):
     if request.method == 'POST':
@@ -57,9 +61,12 @@ def register_view(request):
         if form.is_valid():
             form.save()
             messages.success(request, '註冊成功！')
-            return redirect('login')
+            return redirect('login')  # 成功後跳轉至登入頁面
+        else:
+            print("表單錯誤:", form.errors)  # 打印表單錯誤
     else:
         form = MemberRegistrationForm()
+    
     return render(request, 'accounts/register.html', {'form': form})
 # 會員編輯視圖
 def edit_member(request, id):
@@ -68,7 +75,7 @@ def edit_member(request, id):
         form = MemberEditForm(request.POST, instance=member)
         if form.is_valid():
             form.save()
-            messages.success(request, '會員資訊已更新！')
+            
             return redirect('member_list')
     else:
         form = MemberEditForm(instance=member)
@@ -76,10 +83,19 @@ def edit_member(request, id):
 
 # 刪除會員視圖
 def delete_member(request, id):
+    member_level = request.session.get('member_level')
+
+    if member_level != 'admin':
+        # 如果不是管理者，無法刪除會員，重定向回會員列表
+        return redirect('member_list')
+
+    # 如果是管理者，允許刪除會員
     member = get_object_or_404(Member, id=id)
     if request.method == 'POST':
-        member.delete()        
+        member.delete()
+        messages.success(request, '會員已成功刪除！')
         return redirect('member_list')
+    
     return render(request, 'accounts/confirm_delete.html', {'member': member})
 
 # 無權限視圖
@@ -124,3 +140,46 @@ def logout_view(request):
 def dashboard(request):
  
     return render(request, 'dashboard.html')  
+
+
+
+
+@login_required
+@login_required
+def member_list_view(request):
+    members = Member.objects.all()
+
+    member_level = request.session.get('member_level')
+
+    if member_level == 'editor':
+        # 如果是廠商，只允許查看會員列表，無法編輯和刪除
+        return render(request, 'accounts/member_list.html', {'members': members, 'can_edit': False})
+    
+    elif member_level == 'admin':
+        # 如果是管理者，允許編輯和刪除
+        return render(request, 'accounts/member_list.html', {'members': members, 'can_edit': True})
+    
+    # 如果不是管理員或廠商，重定向到無權限頁面
+    return redirect('no_permission')
+
+
+@login_required
+def member_edit_view(request, member_id):
+    member_level = request.session.get('member_level')
+
+    if member_level != 'admin':
+        # 如果不是管理者，無法編輯會員資料，重定向到會員列表
+        return redirect('member_list')
+
+    # 如果是管理者，允許進行編輯操作
+    member = Member.objects.get(id=member_id)
+    if request.method == 'POST':
+        form = MemberEditForm(request.POST, instance=member)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '會員資料已更新！')
+            return redirect('member_list')
+    else:
+        form = MemberEditForm(instance=member)
+    
+    return render(request, 'accounts/member_edit.html', {'form': form})

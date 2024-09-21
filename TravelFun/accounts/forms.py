@@ -14,6 +14,11 @@ class MemberRegistrationForm(forms.ModelForm):
     class Meta:
         model = Member
         fields = ['username', 'full_name', 'email']
+        labels = {
+            'username': '帳號',
+            'full_name': '姓名',
+            'email': '電子郵件',
+        }
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
@@ -28,6 +33,7 @@ class MemberRegistrationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
 
 class MemberEditForm(forms.ModelForm):
     class Meta:

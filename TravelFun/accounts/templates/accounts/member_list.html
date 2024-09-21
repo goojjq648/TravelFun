@@ -3,35 +3,40 @@
 {% block content %}
 <h2 class="text-center">會員列表</h2>
 
-{% if request.session.member_level == 'admin' %}
-    <div class="mb-3">
+<div class="mb-3">
+    {% if can_edit %}
         <a href="{% url 'add_member' %}" class="btn btn-primary">新增會員</a>
-        <form method="GET" action="{% url 'search_members' %}" class="d-inline">
-            <input type="text" name="search" placeholder="搜尋會員" class="form-control d-inline-block mb-2" style="width: auto;">
-            <button type="submit" class="btn btn-secondary">搜尋</button>
-        </form>
-    </div>
-    <table class="table mt-3">
-        <thead class="thead-light">
-            <tr class="text-center">
-                <th>姓名</th>
-                <th>帳號</th>
-                <th>電子郵件</th>
-                <th>權限等級</th>
-                <th>註冊時間</th>
-                <th>最後更新時間</th>
+    {% endif %}
+    <form method="GET" action="{% url 'search_members' %}" class="d-inline">
+        <input type="text" name="search" placeholder="搜尋會員" class="form-control d-inline-block mb-2" style="width: auto;">
+        <button type="submit" class="btn btn-secondary">搜尋</button>
+    </form>
+</div>
+
+<table class="table mt-3">
+    <thead class="thead-light">
+        <tr class="text-center">
+            <th>姓名</th>
+            <th>帳號</th>
+            <th>電子郵件</th>
+            <th>權限等級</th>
+            <th>註冊時間</th>
+            <th>最後更新時間</th>
+            {% if can_edit %}
                 <th>操作</th>
-            </tr>
-        </thead>
-        <tbody class="text-center">
-            {% for member in members %}
-                <tr>
-                    <td>{{ member.full_name }}</td>
-                    <td>{{ member.username }}</td>
-                    <td>{{ member.email }}</td>
-                    <td>{{ member.get_level_display }}</td>
-                    <td>{{ member.date_joined }}</td>
-                    <td>{{ member.last_updated }}</td>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody class="text-center">
+        {% for member in members %}
+            <tr>
+                <td>{{ member.full_name }}</td>
+                <td>{{ member.username }}</td>
+                <td>{{ member.email }}</td>
+                <td>{{ member.get_level_display }}</td>
+                <td>{{ member.date_joined }}</td>
+                <td>{{ member.last_updated }}</td>
+                {% if can_edit %}
                     <td>
                         <a href="{% url 'edit_member' member.id %}" class="btn btn-warning">編輯</a>
                         <form method="POST" action="{% url 'delete_member' member.id %}" style="display:inline;" onsubmit="return confirm('確定要刪除這個會員嗎？');">
@@ -39,17 +44,16 @@
                             <button type="submit" class="btn btn-danger">刪除</button>
                         </form>
                     </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <div class="text-center">
-        <form method="POST" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">登出</button>
-        </form>
-    </div>
-{% else %}
-    <p class="text-center">您沒有權限查看這些內容。</p>
-{% endif %}
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="text-center">
+    <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">登出</button>
+    </form>
+</div>
 {% endblock %}
